@@ -36,6 +36,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 #deeptime-close{position:absolute;top:16px;right:24px;font-size:28px;cursor:pointer;color:#fff;background:rgba(0,0,0,0.5);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;}
 
 #tip{display:none;position:fixed;z-index:9999;background:#1a1a2e;color:#e2e8f0;padding:12px 16px;border-radius:10px;font-size:12px;line-height:1.6;pointer-events:none;max-width:380px;box-shadow:0 8px 24px rgba(0,0,0,0.4);border:1px solid #334155;}
+.pjf-name, .pjf-life, .pjf-sec { paint-order: stroke; stroke: #fff; stroke-width: 1.2px; stroke-linejoin: round; }
 .tip-title{font-weight:700;font-size:14px;color:#fff;border-bottom:1px solid #334155;padding-bottom:5px;margin-bottom:5px;}
 .tip-label{color:#94a3b8;} .tip-val{color:#fbbf24;font-weight:600;} .tip-val2{color:#93c5fd;font-weight:600;}
 .tip-detail{margin-top:5px;padding-top:5px;border-top:1px solid #334155;color:#cbd5e1;font-size:11px;}
@@ -233,23 +234,8 @@ var HF=[{"n":"Narmer (Menes)","b":964,"l":50,"imp":5,"cat":"Political","known":"
 /* Post-Jesus Biblical Figures — Apostles, Reformers, Denomination Founders.
    Rendered as a dedicated cascading band that starts at Jesus' row and goes UP. */
 var PJF=[
-{n:"Mary (mother of Jesus)",b:4096,l:66,grp:"Apostle",ref:"Luke 1:26-38","detail":"Mother of Jesus Christ; model of obedient faith."},
-{n:"Andrew the Apostle",b:4108,l:66,grp:"Apostle",ref:"Matt 4:18","detail":"First-called disciple, brother of Peter; martyred on X-cross at Patras ~60 AD."},
-{n:"John the Baptist",b:4109,l:36,grp:"Apostle",ref:"Matt 3","detail":"Forerunner of Christ; beheaded by Herod Antipas ~32 AD."},
-{n:"Philip the Apostle",b:4109,l:85,grp:"Apostle",ref:"John 1:43","detail":"Apostle; evangelized Asia Minor; martyred in Hierapolis ~80 AD."},
-{n:"Simon the Zealot",b:4109,l:70,grp:"Apostle",ref:"Luke 6:15","detail":"Apostle, former zealot; martyred in Persia ~65 AD."},
-{n:"Matthias",b:4109,l:85,grp:"Apostle",ref:"Acts 1:26","detail":"Chosen to replace Judas Iscariot as the 12th apostle."},
-{n:"James son of Zebedee",b:4111,l:47,grp:"Apostle",ref:"Acts 12:2","detail":"Brother of John; first apostle martyred — beheaded by Herod 44 AD."},
-{n:"Peter (Simon)",b:4113,l:65,grp:"Apostle",ref:"Matt 16:18","detail":"Chief apostle; crucified upside-down in Rome under Nero ~64 AD."},
-{n:"James brother of Jesus",b:4115,l:61,grp:"Apostle",ref:"Gal 1:19","detail":"Leader of the Jerusalem church; author of James; martyred ~62 AD."},
 {n:"Paul the Apostle",b:4119,l:59,grp:"Apostle",ref:"Acts 9","detail":"Apostle to the Gentiles; authored most of the New Testament; beheaded in Rome ~64-67 AD."},
-{n:"Matthew the Apostle",b:4119,l:65,grp:"Apostle",ref:"Matt 9:9","detail":"Tax collector turned apostle; Gospel author; martyred in Ethiopia."},
-{n:"Thomas the Apostle",b:4119,l:67,grp:"Apostle",ref:"John 20:24","detail":"'Doubting Thomas'; carried gospel to India; martyred ~72 AD."},
-{n:"Stephen",b:4119,l:29,grp:"Apostle",ref:"Acts 7","detail":"First Christian martyr; stoned ~34 AD."},
-{n:"Jude Thaddaeus",b:4119,l:60,grp:"Apostle",ref:"Jude 1","detail":"Apostle; author of Jude; martyred in Persia."},
 {n:"John the Apostle",b:4120,l:94,grp:"Apostle",ref:"Rev 1:9","detail":"Beloved apostle; Gospel, Epistles, Revelation; died Ephesus ~100 AD."},
-{n:"Bartholomew (Nathanael)",b:4124,l:60,grp:"Apostle",ref:"John 1:45","detail":"Apostle; flayed alive in Armenia ~70 AD."},
-{n:"James son of Alphaeus",b:4124,l:52,grp:"Apostle",ref:"Matt 10:3","detail":"Apostle 'the Less'; martyred ~62 AD."},
 {n:"Pope Gregory I (the Great)",b:4654,l:64,grp:"EarlyChurch",ref:"Great Controversy ch.3","detail":"Last of the Latin Fathers; shaped medieval papacy and liturgy."},
 {n:"Anselm of Canterbury",b:5147,l:76,grp:"EarlyChurch",ref:"","detail":"Father of Scholasticism; ontological argument; Cur Deus Homo."},
 {n:"Peter Waldo (Waldenses)",b:5254,l:78,grp:"Forerunner",ref:"Great Controversy ch.4","detail":"Founder of the Waldenses; lay preachers of Scripture."},
@@ -483,9 +469,9 @@ var LEFT_PX = xS(0); /* leftmost = AM 0 */
 /* Vertical layout — mirroring original structure */
 var ERA_H = 18;
 var MAJ_BAND_Y = ERA_H + 2;
-var MAJ_BAND_H = 38;
+var MAJ_BAND_H = 50;
 var SUB_BAND_Y = MAJ_BAND_Y + MAJ_BAND_H;
-var SUB_BAND_H = 22;
+var SUB_BAND_H = 32;
 var DAT_Y = SUB_BAND_Y + SUB_BAND_H + 1;
 var AM_Y_OFF = DAT_Y + 10;
 var BASE = AM_Y_OFF + 14;
@@ -751,7 +737,7 @@ function drawEvents() {
 
   allMaj.forEach(function(m) {
     var isBib = m.src === "b";
-    var ly = MAJ_BAND_Y + m.row * 6;
+    var ly = MAJ_BAND_Y + m.row * 7;
     if (ly > MAJ_BAND_Y + MAJ_BAND_H - 6) return;
     var col = PAL_EV_MAJ;
     var dAttr = isBib ? "mev" : "hev";
@@ -777,7 +763,7 @@ function drawEvents() {
     for (var r = 0; r < pbmRowEnds.length; r++) { if (px >= pbmRowEnds[r] + 6) { bestRow = r; break; } bestRow = r + 1; }
     if (bestRow >= pbmRowEnds.length) pbmRowEnds.push(0);
     pbmRowEnds[bestRow] = px + textW;
-    var ly = MAJ_BAND_Y + bestRow * 6;
+    var ly = MAJ_BAND_Y + bestRow * 7;
 
     gEv.append("line").attr("x1",px).attr("y1",ERA_H+1).attr("x2",px).attr("y2",TOTAL_H)
       .attr("class","ev-dashed").attr("stroke",PAL_EV_MAJ).attr("stroke-width",1).attr("opacity",0.15);
@@ -799,7 +785,7 @@ function drawEvents() {
     s.row = bestRow; s.px = px;
   });
   subSorted.forEach(function(s) {
-    var ly = SUB_BAND_Y + s.row * 5;
+    var ly = SUB_BAND_Y + s.row * 6;
     if (ly > SUB_BAND_Y + SUB_BAND_H - 5) return;
     gEv.append("line").attr("x1",s.px).attr("y1",ERA_H+2).attr("x2",s.px).attr("y2",TOTAL_H)
       .attr("class","ev-dashed").attr("stroke",PAL_EV_SUB).attr("stroke-width",1).attr("opacity",0.12);
@@ -913,15 +899,19 @@ function drawBible() {
   });
 }
 
-/* ── Post-Jesus Biblical Figures — cascades UP from Jesus' row (mirror of Adam→Jesus spine) ── */
+/* ── Post-Jesus Biblical Figures — cascades UP from Jesus' row (mirror of Adam→Jesus spine).
+   Two parallel cascades share Jesus' row as their origin:
+     • CHAIN: Apostles → Pre-Reformation → Reformers (single ascending column)
+     • FOUNDER: Denomination Founders (restarts from Jesus' row, ascends as a second column) ── */
 function drawPJF() {
   var g = gRoot.append("g").attr("class","layer-pjf");
-  /* Group section labels keyed by the first row of each group */
-  var groupNames = {Apostle:"Apostles & First Witnesses", EarlyChurch:"Early Church Fathers", Forerunner:"Pre-Reformation", Reformer:"Reformers", Founder:"Denomination Founders"};
+  var groupNames = {Apostle:"Apostles", EarlyChurch:"Early Church", Forerunner:"Pre-Reformation", Reformer:"Reformers", Founder:"Denomination Founders"};
   var seenGrp = {};
+  var chainRow = 0, founderRow = 0;
 
   PJF.forEach(function(f, idx) {
-    var fy = JESUS_ROW_TOP - (idx + 1) * PJF_ROW_H;
+    var rowIdx = (f.grp === "Founder") ? ++founderRow : ++chainRow;
+    var fy = JESUS_ROW_TOP - rowIdx * PJF_ROW_H;
     /* Stop when cascade would touch the existing historical-figures band */
     if (fy < BIBLE_TOP + 4) return;
 
@@ -929,33 +919,41 @@ function drawPJF() {
     var fx = xS(f.b), fw = f.l ? Math.max(xS(f.b + f.l) - fx, 10) : 16;
     var cc = PJF_COL[f.grp] || "#b45309";
 
-    /* Section header above the first row of each group */
-    if (!seenGrp[f.grp]) {
-      seenGrp[f.grp] = true;
-      g.append("text").attr("x", fx).attr("y", barT-2).attr("text-anchor","start")
-        .attr("fill", cc).attr("font-size", 3.5).attr("font-weight", 700).attr("opacity", 0.85)
-        .style("text-transform","uppercase").attr("class","pjf-sec").text(groupNames[f.grp] || f.grp);
-    }
+    /* Chain column: name LEFT of bar (text-anchor=end). Founder column: name RIGHT of bar
+       (text-anchor=start) so the two parallel cascades don't collide horizontally. */
+    var isFounder = (f.grp === "Founder");
+    var nameX = isFounder ? (fx + fw + 3) : (fx - 3);
+    var nameAnchor = isFounder ? "start" : "end";
 
-    /* Name label to the LEFT of bar — mirrors biblical genealogy person-name placement */
     var ng = g.append("g").attr("class","bar-hov").attr("data-type","pjf").attr("data-idx", idx);
-    ng.append("text").attr("x", fx - 3).attr("y", barT+5).attr("text-anchor","end")
-      .attr("fill", cc).attr("font-size", 5.5).attr("font-weight", 700)
+    ng.append("text").attr("x", nameX).attr("y", barT+4.5).attr("text-anchor", nameAnchor)
+      .attr("fill", cc).attr("font-size", 4.5).attr("font-weight", 700)
       .attr("class","pjf-name").text(f.n);
 
-    /* Lifespan bar (same shape & opacity as biblical lifespan) */
+    /* Lifespan bar */
     ng.append("rect").attr("x", fx).attr("y", barT).attr("width", fw).attr("height", barH)
-      .attr("fill", cc).attr("opacity", 0.8).attr("rx", 3);
+      .attr("fill", cc).attr("opacity", 0.85).attr("rx", 3);
 
-    /* Lifespan years label — inside bar if it fits, else after */
-    if (fw > 50)
-      g.append("text").attr("x", fx+2).attr("y", barT+5).attr("fill","#fff").attr("font-size",4).attr("font-weight",600).attr("class","pjf-life").text(f.l+" yrs");
-    else
-      g.append("text").attr("x", fx+fw+2).attr("y", barT+5).attr("fill", cc).attr("font-size",4).attr("font-weight",500).attr("class","pjf-life").text(f.l+" yrs");
+    /* Lifespan years label — inside bar if it fits, else opposite side from the name */
+    if (fw > 55) {
+      g.append("text").attr("x", fx+2).attr("y", barT+4.5).attr("fill","#fff").attr("font-size",3.6).attr("font-weight",600).attr("class","pjf-life").style("pointer-events","none").text(f.l+" yrs");
+    } else if (isFounder) {
+      /* Founder names sit to the right; put lifespan label to the LEFT of bar so they don't collide */
+      g.append("text").attr("x", fx-2).attr("y", barT+4.5).attr("text-anchor","end").attr("fill", cc).attr("font-size",3.6).attr("font-weight",500).attr("class","pjf-life").style("pointer-events","none").text(f.l+"y");
+    } else {
+      g.append("text").attr("x", fx+fw+2).attr("y", barT+4.5).attr("fill", cc).attr("font-size",3.6).attr("font-weight",500).attr("class","pjf-life").style("pointer-events","none").text(f.l+"y");
+    }
 
-    /* AD/BC date under bar */
-    var ad = f.b - C, dStr = ad >= 0 ? ad+" AD" : Math.abs(ad)+" BC";
-    g.append("text").attr("x", fx).attr("y", barT+barH+4).attr("fill", "#7C2D12").attr("font-size",3.4).attr("font-weight",500).attr("class","pjf-date").text(dStr);
+    /* Section header — drawn once per group, on the OPPOSITE side from the names so no collision */
+    if (!seenGrp[f.grp]) {
+      seenGrp[f.grp] = true;
+      var headerX, headerAnchor;
+      if (isFounder) { headerX = fx - 14; headerAnchor = "end"; }
+      else { headerX = fx + fw + 26; headerAnchor = "start"; }
+      g.append("text").attr("x", headerX).attr("y", barT+4.5).attr("text-anchor", headerAnchor)
+        .attr("fill", cc).attr("font-size", 3.6).attr("font-weight", 700).attr("opacity", 0.7)
+        .style("text-transform","uppercase").attr("class","pjf-sec").style("pointer-events","none").text("◆ "+groupNames[f.grp]);
+    }
   });
 }
 
