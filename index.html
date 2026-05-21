@@ -795,11 +795,17 @@ function drawEvents() {
       .attr("class","sub-label").text(s.n);
   });
 
-  /* Row labels */
-  gEv.append("text").attr("x",MAIN_LEFT+2).attr("y",MAJ_BAND_Y+6).attr("fill",PAL_EV_MAJ).attr("font-size",5).attr("font-weight",700)
-    .style("text-transform","uppercase").text("Major Events");
-  gEv.append("text").attr("x",MAIN_LEFT+2).attr("y",SUB_BAND_Y+5).attr("fill",PAL_EV_SUB).attr("font-size",5).attr("font-weight",700)
-    .style("text-transform","uppercase").text("Sub Events");
+  /* Row labels — rotated 90° so they read top-to-bottom in the leftmost column */
+  var mevLx = MAIN_LEFT + 6, mevLy = MAJ_BAND_Y + 2;
+  gEv.append("text").attr("x", mevLx).attr("y", mevLy)
+    .attr("transform", "rotate(90 "+mevLx+" "+mevLy+")")
+    .attr("fill", PAL_EV_MAJ).attr("font-size", 4.5).attr("font-weight", 700)
+    .style("text-transform","uppercase").attr("class","sec-rot").text("Major Events");
+  var sevLx = MAIN_LEFT + 6, sevLy = SUB_BAND_Y + 2;
+  gEv.append("text").attr("x", sevLx).attr("y", sevLy)
+    .attr("transform", "rotate(90 "+sevLx+" "+sevLy+")")
+    .attr("fill", PAL_EV_SUB).attr("font-size", 4.5).attr("font-weight", 700)
+    .style("text-transform","uppercase").attr("class","sec-rot").text("Submajor Events");
 }
 
 /* ── Date labels ── */
@@ -821,8 +827,12 @@ function drawDates() {
 /* ── Pre-Jesus Historical Figures ── */
 function drawHFPre() {
   var g = gRoot.append("g").attr("class","layer-hfpre");
-  g.append("text").attr("x",MAIN_LEFT+2).attr("y",HF_PRE_TOP+5).attr("fill","#1e40af").attr("font-size",5).attr("font-weight",700)
-    .style("text-transform","uppercase").text("Historical Figures");
+  /* Rotated section label in the leftmost column */
+  var hfLx = MAIN_LEFT + 6, hfLy = HF_PRE_TOP + 2;
+  g.append("text").attr("x", hfLx).attr("y", hfLy)
+    .attr("transform", "rotate(90 "+hfLx+" "+hfLy+")")
+    .attr("fill","#1e40af").attr("font-size", 4.5).attr("font-weight", 700)
+    .style("text-transform","uppercase").attr("class","sec-rot").text("Historical Figures");
   for (var k = 0; k < hfPre.length; k++) {
     var fi = hfPre[k], f = HF[fi], row = hfPreRows[k];
     var fx = xS(f.b), fw = f.l ? Math.max(xS(f.b + f.l) - fx, 10) : 20;
@@ -997,9 +1007,12 @@ function drawPower() {
   /* Band background */
   g.append("rect").attr("x",MAIN_LEFT).attr("y",POWER_TOP).attr("width",CHART_W-MAIN_LEFT).attr("height",POWER_H)
     .attr("fill","#fef3c7").attr("opacity",0.35);
-  /* Section label on far-left compressed area */
-  g.append("text").attr("x",MAIN_LEFT+2).attr("y",POWER_TOP+5).attr("fill","#92400E").attr("font-size",4).attr("font-weight",700)
-    .style("text-transform","uppercase").text("Most Powerful Nation");
+  /* Section label — rotated top-to-bottom in the leftmost column */
+  var pwLx = MAIN_LEFT + 6, pwLy = POWER_TOP + 2;
+  g.append("text").attr("x", pwLx).attr("y", pwLy)
+    .attr("transform", "rotate(90 "+pwLx+" "+pwLy+")")
+    .attr("fill","#92400E").attr("font-size", 4).attr("font-weight", 700)
+    .style("text-transform","uppercase").attr("class","sec-rot").text("Most Powerful Nations");
   /* Bars — start drawing under the section label */
   var barTop = POWER_TOP + 7, barH = POWER_H - 9;
   POWER.forEach(function(p, pi) {
@@ -1016,12 +1029,22 @@ function drawWars() {
   var g = gRoot.append("g").attr("class","layer-wars");
   g.append("line").attr("x1",MAIN_LEFT).attr("y1",WAR_TOP).attr("x2",CHART_W).attr("y2",WAR_TOP)
     .attr("stroke","#999").attr("stroke-width",1.5);
-  g.append("text").attr("x",MAIN_LEFT+6).attr("y",WAR_TOP+9).attr("fill","#333").attr("font-size",7).attr("font-weight",700).text("WARS & CIVILIZATIONS BY CONTINENT");
+  /* Wars-section header — rotated top-to-bottom in the leftmost column.
+     Anchored to the right of the per-continent labels so the two columns don't collide. */
+  var wsLx = MAIN_LEFT + 18, wsLy = WAR_TOP + 4;
+  g.append("text").attr("x", wsLx).attr("y", wsLy)
+    .attr("transform", "rotate(90 "+wsLx+" "+wsLy+")")
+    .attr("fill","#333").attr("font-size", 5).attr("font-weight", 700)
+    .style("text-transform","uppercase").attr("class","sec-rot").text("Wars & Civilizations by Continent");
 
   for (var ci = 0; ci < 7; ci++) {
     var ccy = contYArr[ci];
-    g.append("text").attr("x",MAIN_LEFT+2).attr("y",ccy-1).attr("fill",WAR_COL[ci]).attr("font-size",5).attr("font-weight",700)
-      .style("text-transform","uppercase").attr("class","cont-label").text(CONT_NAMES[ci]);
+    /* Continent name — rotated top-to-bottom, one column further left */
+    var clx = MAIN_LEFT + 6, cly = ccy + 1;
+    g.append("text").attr("x", clx).attr("y", cly)
+      .attr("transform", "rotate(90 "+clx+" "+cly+")")
+      .attr("fill", WAR_COL[ci]).attr("font-size", 4).attr("font-weight", 700)
+      .style("text-transform","uppercase").attr("class","cont-label sec-rot").text(CONT_NAMES[ci]);
     g.append("rect").attr("x",0).attr("y",ccy).attr("width",CHART_W).attr("height",contHArr[ci]).attr("fill",WAR_COL[ci]).attr("opacity",0.03);
     if (ci < 6) g.append("line").attr("x1",MAIN_LEFT).attr("y1",ccy+contHArr[ci]+3).attr("x2",CHART_W).attr("y2",ccy+contHArr[ci]+3)
       .attr("stroke","#e5e5e5").attr("stroke-width",0.5);
