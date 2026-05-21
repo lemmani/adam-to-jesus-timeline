@@ -41,13 +41,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .tip-label{color:#94a3b8;} .tip-val{color:#fbbf24;font-weight:600;} .tip-val2{color:#93c5fd;font-weight:600;}
 .tip-detail{margin-top:5px;padding-top:5px;border-top:1px solid #334155;color:#cbd5e1;font-size:11px;}
 
-#legend{position:fixed;bottom:10px;right:10px;background:rgba(255,255,255,0.95);border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:9px;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,0.08);max-width:260px;line-height:1.6;}
+#legend{position:fixed;bottom:10px;right:10px;background:rgba(255,255,255,0.95);border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:9px;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,0.08);max-width:260px;line-height:1.5;transition:all 0.18s;}
+#legend.collapsed{padding:4px 8px;line-height:1;}
+#legend.collapsed #legend-body{display:none;}
+#legend-toggle{cursor:pointer;font-weight:700;font-size:10px;color:#334155;user-select:none;display:flex;align-items:center;gap:6px;}
+#legend-toggle .caret{font-size:8px;color:#94a3b8;}
 .leg-title{font-weight:700;font-size:10px;margin-bottom:4px;color:#334155;}
 .leg-row{display:flex;align-items:center;gap:5px;margin:2px 0;}
 .leg-sw{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
 
-#zoom-controls{position:fixed;bottom:10px;left:10px;display:flex;flex-direction:column;gap:3px;z-index:50;}
-#zoom-controls button{width:32px;height:32px;border-radius:6px;border:1px solid #e2e8f0;background:rgba(255,255,255,0.95);cursor:pointer;font-size:16px;font-weight:700;color:#475569;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+#zoom-controls{position:fixed;top:60px;right:10px;display:flex;flex-direction:column;gap:3px;z-index:50;}
+#zoom-controls button{width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:rgba(255,255,255,0.95);cursor:pointer;font-size:14px;font-weight:700;color:#475569;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
 #zoom-controls button:hover{background:#2563EB;color:#fff;border-color:#2563EB;}
 #zoom-level{font-size:9px;text-align:center;color:#64748b;font-weight:600;}
 
@@ -805,7 +809,8 @@ function drawEvents() {
    font auto-sized to fit within rowH so the label never overflows the row.
    Returns the d3 selection so callers can add classes. ── */
 function rotLabel(g, x, topY, rowH, text, color) {
-  var pad = 4;
+  /* 14-px breathing room (7 each side) so adjacent rows' labels never touch */
+  var pad = 14;
   var avail = Math.max(rowH - pad, 6);
   /* Pick the largest font (capped at 12) that fits text length within available height. */
   var fs = 12;
@@ -817,6 +822,16 @@ function rotLabel(g, x, topY, rowH, text, color) {
     .attr("fill", color).attr("font-size", fs).attr("font-weight", 700)
     .style("text-transform","uppercase").attr("class","sec-rot")
     .text(text);
+}
+
+/* Multi-line rotated label: each entry of `lines` rendered as its own rotated
+   label in a column, side-by-side (left → right). Useful when a single label
+   is too long to fit in one rotated line at a readable size. */
+function rotLabelMulti(g, xStart, topY, rowH, lines, color, colSpacing) {
+  colSpacing = colSpacing || 12;
+  lines.forEach(function(line, i) {
+    rotLabel(g, xStart + i * colSpacing, topY, rowH, line, color);
+  });
 }
 
 /* ── Date labels ── */
@@ -1015,8 +1030,9 @@ function drawPower() {
   /* Band background */
   g.append("rect").attr("x",MAIN_LEFT).attr("y",POWER_TOP).attr("width",CHART_W-MAIN_LEFT).attr("height",POWER_H)
     .attr("fill","#fef3c7").attr("opacity",0.35);
-  /* Section label — rotated bottom-to-top, centred in the row */
-  rotLabel(g, MAIN_LEFT + 6, POWER_TOP, POWER_H, "Most Powerful Nations", "#92400E");
+  /* Section label — stacked across THREE rotated columns: MOST / POWERFUL / NATIONS.
+     Each line is short, so the per-line font is much larger and readable. */
+  rotLabelMulti(g, MAIN_LEFT + 6, POWER_TOP, POWER_H, ["Most","Powerful","Nations"], "#92400E", 16);
   /* Bars — start drawing under the section label */
   var barTop = POWER_TOP + 7, barH = POWER_H - 9;
   POWER.forEach(function(p, pi) {
@@ -1034,15 +1050,16 @@ function drawWars() {
   g.append("line").attr("x1",MAIN_LEFT).attr("y1",WAR_TOP).attr("x2",CHART_W).attr("y2",WAR_TOP)
     .attr("stroke","#999").attr("stroke-width",1.5);
   /* Wars-section header — rotated bottom-to-top, centred over the WHOLE wars section.
-     Placed in a column to the LEFT of the continent labels so the two stacks don't collide. */
+     Placed in a column to the LEFT of the continent labels with enough horizontal
+     gap (≥20 px) so the two thin rotated columns never overlap. */
   var warsTotalH = TOTAL_H - WAR_TOP - 6;
-  rotLabel(g, MAIN_LEFT + 6, WAR_TOP, warsTotalH, "Wars & Civilizations by Continent", "#333");
+  rotLabel(g, MAIN_LEFT + 8, WAR_TOP, warsTotalH, "Wars & Civilizations by Continent", "#333");
 
   for (var ci = 0; ci < 7; ci++) {
     var ccy = contYArr[ci];
     /* Continent name — rotated bottom-to-top, centred in this continent's row,
-       one column to the right of the wars-section header. */
-    rotLabel(g, MAIN_LEFT + 20, ccy, contHArr[ci], CONT_NAMES[ci], WAR_COL[ci])
+       in a column to the RIGHT of the wars-section header. */
+    rotLabel(g, MAIN_LEFT + 32, ccy, contHArr[ci], CONT_NAMES[ci], WAR_COL[ci])
       .classed("cont-label", true);
     g.append("rect").attr("x",0).attr("y",ccy).attr("width",CHART_W).attr("height",contHArr[ci]).attr("fill",WAR_COL[ci]).attr("opacity",0.03);
     if (ci < 6) g.append("line").attr("x1",MAIN_LEFT).attr("y1",ccy+contHArr[ci]+3).attr("x2",CHART_W).attr("y2",ccy+contHArr[ci]+3)
@@ -1287,18 +1304,27 @@ svg.on("mousemove", function(ev) {
 });
 svg.on("mouseleave", function(){ tip.style("display","none"); });
 
-/* ════════════════ LEGEND ════════════════ */
+/* ════════════════ LEGEND (collapsible) ════════════════ */
 function initLegend() {
-  var lg = d3.select("#legend");
-  lg.html('<div class="leg-title">Legend</div>');
+  var lg = d3.select("#legend").classed("collapsed", true);
+  var body = '<div id="legend-body">';
   [
     ["#b45309","Biblical lifespan"],["#EF4444","Begat connector"],
     ["#DC2626","Major event (dashed)"],["#6366f1","Sub-event (dashed)"],
     ["#1e40af","HF: Political"],["#0369a1","HF: Science"],["#7c3aed","HF: Arts"],
     ["#b91c1c","HF: Military"],["#b45309","HF: Religious"],["#047857","HF: Explorer"]
   ].forEach(function(pair) {
-    lg.html(lg.html()+'<div class="leg-row"><span class="leg-sw" style="background:'+pair[0]+'"></span><span>'+pair[1]+'</span></div>');
+    body += '<div class="leg-row"><span class="leg-sw" style="background:'+pair[0]+'"></span><span>'+pair[1]+'</span></div>';
   });
+  body += '</div>';
+  lg.html('<div id="legend-toggle"><span>Legend</span><span class="caret">▴</span></div>' + body);
+  d3.select("#legend-toggle").on("click", function() {
+    var collapsed = !lg.classed("collapsed");
+    lg.classed("collapsed", collapsed);
+    d3.select("#legend-toggle .caret").text(collapsed ? "▾" : "▴");
+  });
+  /* Start collapsed */
+  d3.select("#legend-toggle .caret").text("▾");
 }
 
 /* ════════════════ ZOOM BUTTONS ════════════════ */
